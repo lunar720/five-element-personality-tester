@@ -159,7 +159,7 @@ def save_to_history(name, scores, result_type, result_desc):
         st.session_state.history = st.session_state.history[-20:]
 
 def generate_export_data():
-    if "current_result" in st.session_state:
+    if "current_result" in st.session_state and st.session_state.current_result:
         result = st.session_state.current_result
         scores = result["scores"]
         content = f"""⭐ 五行人格测试结果报告 ⭐
@@ -307,59 +307,11 @@ def main():
 
     st.markdown("""
     <style>
-    .stars-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+    body {
         background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0d0d2d 100%);
-        z-index: -1;
-        overflow: hidden;
-    }
-    .star {
-        position: absolute;
-        background: white;
-        border-radius: 50%;
-        animation: twinkle 2s infinite;
-    }
-    @keyframes twinkle {
-        0%, 100% { opacity: 0.3; }
-        50% { opacity: 1; }
+        min-height: 100vh;
     }
     </style>
-    <div class="stars-bg">
-        <div class="star" style="left:8%;top:12%;width:2px;height:2px;animation-delay:0.1s;"></div>
-        <div class="star" style="left:15%;top:28%;width:3px;height:3px;animation-delay:0.3s;"></div>
-        <div class="star" style="left:22%;top:8%;width:2px;height:2px;animation-delay:0.5s;"></div>
-        <div class="star" style="left:30%;top:45%;width:2px;height:2px;animation-delay:0.7s;"></div>
-        <div class="star" style="left:38%;top:18%;width:3px;height:3px;animation-delay:0.9s;"></div>
-        <div class="star" style="left:45%;top:62%;width:2px;height:2px;animation-delay:1.1s;"></div>
-        <div class="star" style="left:52%;top:35%;width:2px;height:2px;animation-delay:1.3s;"></div>
-        <div class="star" style="left:60%;top:78%;width:3px;height:3px;animation-delay:1.5s;"></div>
-        <div class="star" style="left:68%;top:22%;width:2px;height:2px;animation-delay:1.7s;"></div>
-        <div class="star" style="left:75%;top:55%;width:2px;height:2px;animation-delay:1.9s;"></div>
-        <div class="star" style="left:82%;top:38%;width:3px;height:3px;animation-delay:0.2s;"></div>
-        <div class="star" style="left:90%;top:70%;width:2px;height:2px;animation-delay:0.4s;"></div>
-        <div class="star" style="left:5%;top:50%;width:2px;height:2px;animation-delay:0.6s;"></div>
-        <div class="star" style="left:12%;top:85%;width:2px;height:2px;animation-delay:0.8s;"></div>
-        <div class="star" style="left:28%;top:68%;width:3px;height:3px;animation-delay:1.0s;"></div>
-        <div class="star" style="left:42%;top:82%;width:2px;height:2px;animation-delay:1.2s;"></div>
-        <div class="star" style="left:58%;top:15%;width:2px;height:2px;animation-delay:1.4s;"></div>
-        <div class="star" style="left:72%;top:90%;width:3px;height:3px;animation-delay:1.6s;"></div>
-        <div class="star" style="left:88%;top:48%;width:2px;height:2px;animation-delay:1.8s;"></div>
-        <div class="star" style="left:35%;top:32%;width:2px;height:2px;animation-delay:0.0s;"></div>
-        <div class="star" style="left:65%;top:52%;width:2px;height:2px;animation-delay:0.5s;"></div>
-        <div class="star" style="left:18%;top:75%;width:2px;height:2px;animation-delay:0.9s;"></div>
-        <div class="star" style="left:85%;top:12%;width:2px;height:2px;animation-delay:1.3s;"></div>
-        <div class="star" style="left:48%;top:25%;width:2px;height:2px;animation-delay:1.7s;"></div>
-        <div class="star" style="left:25%;top:42%;width:2px;height:2px;animation-delay:0.3s;"></div>
-        <div class="star" style="left:55%;top:72%;width:2px;height:2px;animation-delay:0.7s;"></div>
-        <div class="star" style="left:78%;top:85%;width:2px;height:2px;animation-delay:1.1s;"></div>
-        <div class="star" style="left:10%;top:38%;width:2px;height:2px;animation-delay:1.5s;"></div>
-        <div class="star" style="left:95%;top:28%;width:2px;height:2px;animation-delay:1.9s;"></div>
-        <div class="star" style="left:32%;top:78%;width:2px;height:2px;animation-delay:0.4s;"></div>
-    </div>
     """, unsafe_allow_html=True)
     
     st.markdown("""
@@ -372,96 +324,130 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        name = st.text_input("输入你的代号：", "星际旅人")
-    with col2:
-        st.caption("💡 提示：每题1-5分，1=非常不符合，5=非常符合")
+    if "page" not in st.session_state:
+        st.session_state.page = "quiz"
     
-    if "answers" not in st.session_state:
-        st.session_state.answers = [3] * len(QUESTIONS)
-    
-    answered_count = sum(1 for a in st.session_state.answers if a != 3)
-    progress = answered_count / len(QUESTIONS)
-    st.progress(progress, text=f"测试进度：{answered_count}/{len(QUESTIONS)}（{int(progress * 100)}%）")
-    
-    st.subheader("📝 请回答下列问题")
-    
-    tabs = st.tabs(["⚔️ 金元素问题", "🌲 木元素问题", "💧 水元素问题", "🔥 火元素问题", "🌍 土元素问题"])
-    
-    for tab_idx, (tab, dim) in enumerate(zip(tabs, ["metal", "wood", "water", "fire", "earth"])):
-        with tab:
-            dim_questions = [(i, q) for i, q in enumerate(QUESTIONS) if q["dimension"] == dim]
-            for i, q in dim_questions:
-                col_q, col_a = st.columns([3, 1])
-                with col_q:
-                    st.write(f"{i+1}. {q['text']}")
-                with col_a:
-                    st.session_state.answers[i] = st.slider("", 1, 5, st.session_state.answers[i], 
-                                                            key=f"q_{i}", label_visibility="collapsed")
-            st.caption(f"✨ {ELEMENT_NAMES[dim]}元素题目：关注相关特质")
-    
-    with st.expander("📊 实时得分预览（可选）"):
-        current_scores = calculate_element_scores(st.session_state.answers)
-        cols = st.columns(5)
-        for i, (dim, element_name) in enumerate(ELEMENT_NAMES.items()):
-            cols[i].metric(element_name, f"{current_scores[dim]:.1f}", delta=None, 
-                          help=f"{dim}元素得分",
-                          label_visibility="visible")
-    
-    if st.button("✨ 开始五行匹配 ✨", type="primary", use_container_width=True):
-        scores = calculate_element_scores(st.session_state.answers)
+    if st.session_state.page == "quiz":
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            name = st.text_input("输入你的代号：", "星际旅人")
+        with col2:
+            st.caption("💡 提示：每题1-5分，1=非常不符合，5=非常符合")
         
-        best_type, best_info, best_dist = find_best_match(scores, ELEMENT_TYPES)
+        if "answers" not in st.session_state:
+            st.session_state.answers = [3] * len(QUESTIONS)
         
-        st.subheader("📏 各五行类型匹配度")
+        st.subheader("📝 请回答下列问题")
         
-        match_data = []
-        for p_type, p_info in ELEMENT_TYPES.items():
-            p_vec = [p_info["coords"]["metal"], p_info["coords"]["wood"], 
-                    p_info["coords"]["water"], p_info["coords"]["fire"], 
-                    p_info["coords"]["earth"]]
-            user_vec = [scores["metal"], scores["wood"], scores["water"], 
-                       scores["fire"], scores["earth"]]
-            dist = sqrt(sum((user_vec[i] - p_vec[i])**2 for i in range(5)))
-            score = max(0, min(100, int(100 - dist * 7)))
-            match_data.append({"人格类型": p_type, "匹配度": f"{score}%", "距离": f"{dist:.2f}"})
+        tabs = st.tabs(["⚔️ 金元素问题", "🌲 木元素问题", "💧 水元素问题", "🔥 火元素问题", "🌍 土元素问题"])
         
-        st.dataframe(pd.DataFrame(match_data), use_container_width=True, hide_index=True)
+        for tab_idx, (tab, dim) in enumerate(zip(tabs, ["metal", "wood", "water", "fire", "earth"])):
+            with tab:
+                dim_questions = [(i, q) for i, q in enumerate(QUESTIONS) if q["dimension"] == dim]
+                for i, q in dim_questions:
+                    col_q, col_a = st.columns([3, 1])
+                    with col_q:
+                        st.write(f"{i+1}. {q['text']}")
+                    with col_a:
+                        st.session_state.answers[i] = st.slider(f"问题{i+1}", 1, 5, st.session_state.answers[i], 
+                                                                key=f"q_{i}", label_visibility="collapsed")
+                st.caption(f"✨ {ELEMENT_NAMES[dim]}元素题目：关注相关特质")
         
-        st.subheader("📊 你的五行属性分布")
-        st.plotly_chart(render_radar_chart(scores), use_container_width=True, key="main_radar")
+        with st.expander("📊 实时得分预览（可选）"):
+            current_scores = calculate_element_scores(st.session_state.answers)
+            cols = st.columns(5)
+            for i, (dim, element_name) in enumerate(ELEMENT_NAMES.items()):
+                cols[i].metric(element_name, f"{current_scores[dim]:.1f}", delta=None, 
+                              help=f"{dim}元素得分",
+                              label_visibility="visible")
         
-        st.subheader("✅ 匹配结果")
-        render_result_card(best_type, best_info, best_dist, scores)
-        
-        st.session_state.current_result = {
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "name": name,
-            "scores": scores.copy(),
-            "result_type": best_type,
-            "result_desc": best_info["desc"]
-        }
-        
-        save_to_history(name, scores, best_type, best_info["desc"])
-        
-        st.balloons()
-        st.toast(f"恭喜 {name}！你是 {best_type}！", icon="🎉")
-        
-        with st.expander("🔍 查看所有匹配详情"):
-            st.json({
+        if st.button("✨ 开始五行匹配 ✨", type="primary", use_container_width=True):
+            scores = calculate_element_scores(st.session_state.answers)
+            
+            match_progress = st.empty()
+            match_text = st.empty()
+            
+            match_text.markdown("<p style='text-align: center; font-size: 1.2em; color: #ffd700;'>🔮 正在进行五行匹配...</p>", unsafe_allow_html=True)
+            
+            for i in range(101):
+                match_progress.progress(i / 100, text=f"匹配进度：{i}%")
+                import time
+                time.sleep(0.01)
+            
+            match_text.markdown("<p style='text-align: center; font-size: 1.2em; color: #4ecdc4;'>✅ 匹配完成！</p>", unsafe_allow_html=True)
+            time.sleep(0.5)
+            
+            match_progress.empty()
+            match_text.empty()
+            
+            best_type, best_info, best_dist = find_best_match(scores, ELEMENT_TYPES)
+            
+            match_data = []
+            for p_type, p_info in ELEMENT_TYPES.items():
+                p_vec = [p_info["coords"]["metal"], p_info["coords"]["wood"], 
+                        p_info["coords"]["water"], p_info["coords"]["fire"], 
+                        p_info["coords"]["earth"]]
+                user_vec = [scores["metal"], scores["wood"], scores["water"], 
+                           scores["fire"], scores["earth"]]
+                dist = sqrt(sum((user_vec[i] - p_vec[i])**2 for i in range(5)))
+                score = max(0, min(100, int(100 - dist * 7)))
+                match_data.append({"人格类型": p_type, "匹配度": f"{score}%", "距离": f"{dist:.2f}"})
+            
+            match_df = pd.DataFrame(match_data)
+            match_df_sorted = match_df.sort_values(by="匹配度", key=lambda x: x.str.replace('%', '').astype(int), ascending=False)
+            
+            st.session_state.current_result = {
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "name": name,
-                "scores": scores,
-                "matched_type": best_type,
-                "confidence": max(0, min(100, int(100 - best_dist * 7))),
-                "dimensions": {
-                    "metal": "⚔️ 金 - 决断力",
-                    "wood": "🌲 木 - 仁爱力",
-                    "water": "💧 水 - 智慧力",
-                    "fire": "🔥 火 - 行动力",
-                    "earth": "🌍 土 - 稳定力"
-                }
-            })
+                "scores": scores.copy(),
+                "result_type": best_type,
+                "result_desc": best_info["desc"],
+                "best_dist": best_dist,
+                "match_data": match_df_sorted.to_dict('records'),
+                "best_info": best_info
+            }
+            
+            save_to_history(name, scores, best_type, best_info["desc"])
+            
+            st.session_state.page = "result"
+            st.rerun()
+    
+    elif st.session_state.page == "result":
+        if "current_result" in st.session_state and st.session_state.current_result:
+            result = st.session_state.current_result
+            
+            st.subheader("📏 各五行类型匹配度")
+            st.dataframe(pd.DataFrame(result["match_data"]), use_container_width=True, hide_index=True)
+            
+            st.subheader("📊 你的五行属性分布")
+            st.plotly_chart(render_radar_chart(result["scores"]), use_container_width=True, key="main_radar")
+            
+            st.subheader("✅ 匹配结果")
+            render_result_card(result["result_type"], result["best_info"], result["best_dist"], result["scores"])
+            
+            st.balloons()
+            st.toast(f"恭喜 {result['name']}！你是 {result['result_type']}！", icon="🎉")
+            
+            with st.expander("🔍 查看所有匹配详情"):
+                st.json({
+                    "name": result["name"],
+                    "scores": result["scores"],
+                    "matched_type": result["result_type"],
+                    "confidence": max(0, min(100, int(100 - result["best_dist"] * 7))),
+                    "dimensions": {
+                        "metal": "⚔️ 金 - 决断力",
+                        "wood": "🌲 木 - 仁爱力",
+                        "water": "💧 水 - 智慧力",
+                        "fire": "🔥 火 - 行动力",
+                        "earth": "🌍 土 - 稳定力"
+                    }
+                })
+            
+            if st.button("🔄 重新测试", type="secondary", use_container_width=True):
+                st.session_state.answers = [3] * len(QUESTIONS)
+                st.session_state.current_result = None
+                st.session_state.page = "quiz"
+                st.rerun()
 
 if __name__ == "__main__":
     main()
