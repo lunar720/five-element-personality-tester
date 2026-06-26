@@ -37,7 +37,7 @@ ELEMENT_TYPES = {
         "strength": "果断理性、目标明确、执行力强",
         "weakness": "过于严肃、缺乏变通、追求完美",
         "advice": "学会宽容和接纳差异，刚柔并济会让你更具领导力。",
-        "color": "#c0c0c0",
+        "color": "#ffd700",
         "symbol": "⚔️",
         "planet": "金星",
         "direction": "西方"
@@ -97,7 +97,7 @@ ELEMENT_NAMES = {
 }
 
 ELEMENT_COLORS = {
-    "metal": "#c0c0c0",
+    "metal": "#ffd700",
     "wood": "#4a904a",
     "water": "#4488ff",
     "fire": "#ff6644",
@@ -231,32 +231,32 @@ def render_result_card(result_type, result_info, best_dist, scores):
     
     with col1:
         st.markdown(f"""
-        <div style="background: linear-gradient(135deg, {result_info['color']}22, #1a1a2e);
+        <div style="background: linear-gradient(135deg, {result_info['color']}44, #1a1a2e);
                     padding: 25px; border-radius: 18px; border-left: 6px solid {result_info['color']};">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <span style="font-size: 3em;">{result_info['symbol']}</span>
                 <div>
-                    <h2 style="color: {result_info['color']}; margin: 0;">{result_type}</h2>
-                    <p style="color: #aaa; font-size: 0.9em;">对应星辰：{result_info['planet']} | 方位：{result_info['direction']}</p>
+                    <h2 style="color: {result_info['color']}; margin: 0; font-size: 1.8em;">{result_type}</h2>
+                    <p style="color: #ffd700; font-size: 1em;">对应星辰：{result_info['planet']} | 方位：{result_info['direction']}</p>
                 </div>
             </div>
-            <p style="font-size: 1.15em; line-height: 1.6; margin-top: 15px;">{result_info['desc']}</p>
-            <hr style="border-color: {result_info['color']}44; margin: 15px 0;">
+            <p style="font-size: 1.15em; line-height: 1.6; margin-top: 15px; color: #fff8dc;">{result_info['desc']}</p>
+            <hr style="border-color: {result_info['color']}88; margin: 15px 0;">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div style="background: {result_info['color']}11; padding: 10px; border-radius: 8px;">
-                    <p style="margin: 0; color: #aaa; font-size: 0.85em;">✨ 优势</p>
-                    <p style="margin: 0; color: white; font-weight: bold;">{result_info['strength']}</p>
+                <div style="background: {result_info['color']}33; padding: 10px; border-radius: 8px;">
+                    <p style="margin: 0; color: #ffeb3b; font-size: 0.9em;">✨ 优势</p>
+                    <p style="margin: 0; color: #fff8dc; font-weight: bold;">{result_info['strength']}</p>
                 </div>
-                <div style="background: #ff444411; padding: 10px; border-radius: 8px;">
-                    <p style="margin: 0; color: #aaa; font-size: 0.85em;">⚠️ 可提升</p>
-                    <p style="margin: 0; color: white; font-weight: bold;">{result_info['weakness']}</p>
+                <div style="background: #ff6b6b33; padding: 10px; border-radius: 8px;">
+                    <p style="margin: 0; color: #ffeb3b; font-size: 0.9em;">⚠️ 可提升</p>
+                    <p style="margin: 0; color: #fff8dc; font-weight: bold;">{result_info['weakness']}</p>
                 </div>
             </div>
-            <div style="background: #4488ff11; padding: 12px; border-radius: 8px; margin-top: 10px;">
-                <p style="margin: 0; color: #aaa; font-size: 0.85em;">💡 发展建议</p>
-                <p style="margin: 0; color: white;">{result_info['advice']}</p>
+            <div style="background: #4ecdc433; padding: 12px; border-radius: 8px; margin-top: 10px;">
+                <p style="margin: 0; color: #ffeb3b; font-size: 0.9em;">💡 发展建议</p>
+                <p style="margin: 0; color: #fff8dc;">{result_info['advice']}</p>
             </div>
-            <p style="margin-top: 15px; color: #888; font-size: 0.85em;">🎯 匹配度评分：{max(0, min(100, int(100 - best_dist * 7)))}/100</p>
+            <p style="margin-top: 15px; color: #ffd700; font-size: 0.95em;">🎯 匹配度评分：{max(0, min(100, int(100 - best_dist * 7)))}/100</p>
         </div>
         """, unsafe_allow_html=True)
     
